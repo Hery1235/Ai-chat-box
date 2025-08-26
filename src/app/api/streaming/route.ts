@@ -9,6 +9,13 @@ export async function POST(req: Request) {
       model: openai("gpt-4.1-nano"),
       prompt,
     });
+    response.usage.then((usage) => {
+      console.log({
+        inputToken: usage.inputTokens,
+        outputTokenS: usage.outputTokens,
+        totalTokens: usage.totalTokens,
+      });
+    });
 
     return response.toUIMessageStreamResponse();
     // or: response.toDataStreamResponse();
