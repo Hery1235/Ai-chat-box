@@ -19,7 +19,12 @@ export default function ChatPage() {
       {error && <div className="text-red-500 mb-4">{error.message}</div>}
 
       {messages.map((message) => (
-        <div key={message.id} className="mb-4">
+        <div
+          key={message.id}
+          className={`mb-4 flex flex-col ${
+            message.role === "user" ? "items-end" : "items-start"
+          }`}
+        >
           <div className="font-semibold">
             {message.role === "user" ? "You:" : "AI:"}
           </div>

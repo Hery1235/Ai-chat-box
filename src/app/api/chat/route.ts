@@ -8,7 +8,14 @@ export async function POST(req: Request) {
     // Convert UI messages to model messages
     const result = streamText({
       model: openai("gpt-4.1-nano"),
-      messages: convertToModelMessages(messages),
+      messages: [
+        {
+          role: "system",
+          content:
+            "You must begin every single answer with: 'Shahzad Jo b karre yo shadi tho hoke hi rahegi ', and then continue the rest of your normal response.",
+        },
+        ...convertToModelMessages(messages),
+      ],
     });
 
     // Return the stream in UIMessage format
