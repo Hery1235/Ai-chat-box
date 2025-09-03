@@ -23,6 +23,7 @@ export default function TourGuidePage() {
   return (
     <div className="flex items-center justify-center mt-8">
       {error && <div className="text-red-500">Error while loding data </div>}
+      {!object && <h1>No data availible</h1>}
       <div>
         {object?.city && <h1 className="text-xl">City: {object.city}</h1>}
         {object?.city && <h1>Number of days: {object.duration}</h1>}
@@ -38,7 +39,7 @@ export default function TourGuidePage() {
             </div>
           ))}
         </div>
-        <div className="text-xl p-4">Important Packing: </div>
+
         <div className="flex gap-2 flex-col">
           {object?.packingList?.map((item, index) => (
             <div

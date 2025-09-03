@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-
-export default function completionPage() {
+import Image from "next/image";
+export default function GenerateImage() {
   const [prompt, setPrompt] = useState("");
-  const [completion, setCompletion] = useState("");
+  const [image, setImage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emptyPrompt, setEmptyPrompt] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,10 +17,9 @@ export default function completionPage() {
     }
 
     setIsLoading(true);
-    setError("");
     setEmptyPrompt(false);
     try {
-      const response = await fetch("/api/completion/", {
+      const response = await fetch("/api/generate-image/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
@@ -31,11 +30,11 @@ export default function completionPage() {
         throw new Error(data.error || "Something went wrong ");
       }
 
-      setCompletion(data.text);
+      console.log("The outpout from api in here ", data);
+      setImage(data);
       setPrompt("");
     } catch (error) {
       console.log(error);
-      setCompletion("");
       setError(error instanceof Error ? error.message : "Please try again ");
     } finally {
       setIsLoading(false);
@@ -44,11 +43,19 @@ export default function completionPage() {
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
       {error && <div className="text-red-500 mb-4">{error}</div>}
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : completion ? (
-        <div className="whitespace-pre-wrap">{completion}</div>
-      ) : null}
+      {image ? (
+        <img
+          src={`data:image/png;base64,${image}`}
+          alt="Generated"
+          className="rounded-xl shadow-md"
+        />
+      ) : (
+        <div className="mb-4">
+          <div className="flex items-center gap-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+          </div>
+        </div>
+      )}
       <form
         onSubmit={submitHandler}
         className="fixed bottom-0 w-full max-w-md mx-auto left-0 right-0 p-4 bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 shadow-lg"
