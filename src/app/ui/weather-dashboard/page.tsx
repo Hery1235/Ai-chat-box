@@ -3,18 +3,18 @@
 import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import type { ChatMessage } from "@/app/api/multi-tool/route";
+import { ChatMessage } from "@/app/api/weather-dashboard/route";
+import { WeatherCard } from "./weather-card";
 
-export default function ToolPage() {
+export default function APIToolPage() {
   const [input, setInput] = useState("");
 
   const { messages, sendMessage, status, error, stop } = useChat<ChatMessage>({
     transport: new DefaultChatTransport({
-      api: "/api/multi-tool",
+      api: "/api/weather-dashboard",
     }),
   });
 
-  console.log("The details are ", messages);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     sendMessage({ text: input });
@@ -26,12 +26,7 @@ export default function ToolPage() {
       {error && <div className="text-red-500 mb-4">{error.message}</div>}
 
       {messages.map((message) => (
-        <div
-          key={message.id}
-          className={`mb-4 flex flex-col ${
-            message.role === "user" ? "items-end" : "items-start"
-          }`}
-        >
+        <div key={message.id} className="mb-4">
           <div className="font-semibold">
             {message.role === "user" ? "You:" : "AI:"}
           </div>
@@ -46,78 +41,60 @@ export default function ToolPage() {
                     {part.text}
                   </div>
                 );
-              // case "tool-getPerson":
-              //   switch (part.state) {
-              //     case "input-streaming":
-              //       return (
-              //         <div key={`${message.id}-getUser-${index}`}>
-              //           <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-              //             Loading Results...{" "}
-              //           </div>
-              //         </div>
-              //       );
-              //     case "input-available":
-              //       return (
-              //         <div key={`${message.id}-getUser-${index}`}>
-              //           <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-              //             Loading Results for {part.input.name}
-              //           </div>
-              //         </div>
-              //       );
-              //     case "output-available":
-              //       return (
-              //         <div key={`${message.id}-getUser-${index}`}>
-              //           <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-              //             {part.output}
-              //           </div>
-              //         </div>
-              //       );
-              //     case "output-error":
-              //       return (
-              //         <div key={`${message.id}-getUser-${index}`}>
-              //           <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-              //             {part.errorText}
-              //           </div>
-              //         </div>
-              //       );
-              //     default:
-              //       return null;
-              //   }
-
-              case "tool-weather":
+              case "tool-getWeather":
                 switch (part.state) {
                   case "input-streaming":
                     return (
-                      <div key={`${message.id}-weather-${index}`}>
-                        <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-                          Loading Results...{" "}
+                      <div
+                        key={`${message.id}-getWeather-${index}`}
+                        className="bg-zinc-800/50 border border-zinc-700 p-2 rounded mt-1 mb-2"
+                      >
+                        <div className="text-sm text-zinc-500">
+                          🌤️ Receiving weather request...
                         </div>
+                        <pre className="text-xs text-zinc-600 mt-1">
+                          {JSON.stringify(part.input, null, 2)}
+                        </pre>
                       </div>
                     );
+
                   case "input-available":
                     return (
-                      <div key={`${message.id}-weather-${index}`}>
-                        <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-                          Loading Results for {part.input.city}
+                      <div
+                        key={`${message.id}-getWeather-${index}`}
+                        className="bg-zinc-800/50 border border-zinc-700 p-2 rounded mt-1 mb-2"
+                      >
+                        <div className="text-sm text-zinc-400">
+                          🌤️ Getting weather for {part.input.city}...
                         </div>
                       </div>
                     );
+
                   case "output-available":
                     return (
-                      <div key={`${message.id}-weather-${index}`}>
-                        <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-                          {part.output}
+                      <div
+                        key={`${message.id}-getWeather-${index}`}
+                        className="mt-1 mb-2"
+                      >
+                        <div className="text-sm text-zinc-400">🌤️ Weather</div>
+                        <div className="text-sm text-zinc-300">
+                          <WeatherCard weatherData={part.output} />
                         </div>
                       </div>
                     );
+
                   case "output-error":
                     return (
-                      <div key={`${message.id}-weather-${index}`}>
-                        <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-                          {part.errorText}
+                      <div
+                        key={`${message.id}-getWeather-${index}`}
+                        className="bg-zinc-800/50 border border-zinc-700 p-2 rounded mt-1 mb-2"
+                      >
+                        <div className="text-sm text-red-400">
+                          Error: {part.errorText}
                         </div>
                       </div>
                     );
+
                   default:
                     return null;
                 }

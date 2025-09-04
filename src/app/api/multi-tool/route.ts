@@ -11,30 +11,37 @@ import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 
 const tools = {
-  getPerson: tool({
-    description: "A person name for telling his address",
-    inputSchema: z.object({
-      name: z.string(),
-    }),
-    execute: ({ name }) => {
-      if (name === "haris") return "London";
-      else if (name === "asim") return "Australia";
-      else if (name === "tauseef") return "Dubai";
-      else if (name === "ramiz") return "Pakistan";
-      else throw Error("Sorry we are not aware of this person ");
-    },
-  }),
+  // getPerson: tool({
+  //   description: "A person name for telling his address",
+  //   inputSchema: z.object({
+  //     name: z.string(),
+  //   }),
+  //   execute: ({ name }) => {
+  //     if (name === "haris") return "London";
+  //     else if (name === "asim") return "Australia";
+  //     else if (name === "tauseef") return "Dubai";
+  //     else if (name === "ramiz") return "Pakistan";
+  //     else throw Error("Sorry we are not aware of this person ");
+  //   },
+  // }),
   weather: tool({
     description: "Weather for a city",
     inputSchema: z.object({
       city: z.string(),
     }),
-    execute: ({ city }) => {
-      if (city === "London") return "Good";
-      else if (city === "Australia") return "Normal";
-      else if (city === "Dubai") return "Very Hot";
-      else if (city === "Pakistan") return "Hot";
-      else throw Error("Sorry we are not aware of this City ");
+    execute: async ({ city }) => {
+      if (!city || city.toLowerCase().includes("shaidu")) {
+        return "No city found";
+      } else {
+        const response = await fetch(
+          `http://api.weatherapi.com/v1/current.json?key=e41837c54b6b4d2295372349250309 &q=${city}&aqi=no`
+        );
+        if (!response.ok) {
+          return "Error while finding data from weather api";
+        }
+        const data = await response.json();
+        return data.current.temp_c;
+      }
     },
   }),
 };

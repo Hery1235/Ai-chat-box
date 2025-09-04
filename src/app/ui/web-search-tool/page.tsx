@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import type { ChatMessage } from "@/app/api/multi-tool/route";
+import type { ChatMessage } from "@/app/api/web-search-tool/route";
 
-export default function ToolPage() {
+export default function WebSearchToolPage() {
   const [input, setInput] = useState("");
 
   const { messages, sendMessage, status, error, stop } = useChat<ChatMessage>({
     transport: new DefaultChatTransport({
-      api: "/api/multi-tool",
+      api: "/api/web-search-tool",
     }),
   });
 
@@ -46,81 +46,39 @@ export default function ToolPage() {
                     {part.text}
                   </div>
                 );
-              // case "tool-getPerson":
-              //   switch (part.state) {
-              //     case "input-streaming":
-              //       return (
-              //         <div key={`${message.id}-getUser-${index}`}>
-              //           <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-              //             Loading Results...{" "}
-              //           </div>
-              //         </div>
-              //       );
-              //     case "input-available":
-              //       return (
-              //         <div key={`${message.id}-getUser-${index}`}>
-              //           <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-              //             Loading Results for {part.input.name}
-              //           </div>
-              //         </div>
-              //       );
-              //     case "output-available":
-              //       return (
-              //         <div key={`${message.id}-getUser-${index}`}>
-              //           <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-              //             {part.output}
-              //           </div>
-              //         </div>
-              //       );
-              //     case "output-error":
-              //       return (
-              //         <div key={`${message.id}-getUser-${index}`}>
-              //           <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-              //             {part.errorText}
-              //           </div>
-              //         </div>
-              //       );
-              //     default:
-              //       return null;
-              //   }
-
-              case "tool-weather":
+              case "tool-web_search_preview":
                 switch (part.state) {
                   case "input-streaming":
                     return (
                       <div key={`${message.id}-weather-${index}`}>
-                        <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-                          Loading Results...{" "}
-                        </div>
+                        <div className="bg-red-500">Preparing to search...</div>
+                        <pre>{JSON.stringify(part.input, null, 2)}</pre>
                       </div>
                     );
                   case "input-available":
                     return (
                       <div key={`${message.id}-weather-${index}`}>
-                        <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-                          Loading Results for {part.input.city}
-                        </div>
+                        <div className="bg-blue-500">Searching the Web..</div>
                       </div>
                     );
                   case "output-available":
                     return (
                       <div key={`${message.id}-weather-${index}`}>
-                        <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-                          {part.output}
-                        </div>
+                        <div className="bg-green-500">Web Search complete</div>
                       </div>
                     );
                   case "output-error":
                     return (
                       <div key={`${message.id}-weather-${index}`}>
-                        <div className="bg-gray-300 p-4 text-center font-semibold text-sm">
-                          {part.errorText}
+                        <div className="bg-red-500">
+                          Error while finding location : {part.errorText}{" "}
                         </div>
                       </div>
                     );
                   default:
                     return null;
                 }
+
               default:
                 return null;
             }
